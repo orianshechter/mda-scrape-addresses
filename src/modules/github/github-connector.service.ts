@@ -2,16 +2,17 @@ import { AddressDto } from '../../dtos/address.dto';
 import { GithubDonationDto } from './github-donation.dto';
 import { GithubCachedAddressDto } from './github-cached-address.dto';
 
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-if (!GITHUB_TOKEN) {
-    throw new Error('missing github token');
-}
-
 export class GithubConnectorService {
     private static instance: GithubConnectorService;
     private CACHED_GEO_LOCATIONS_URL = 'https://raw.githubusercontent.com/orianshechter/blood-donation-addresses/main/test/addressesGeoPoints.json';
+    private GITHUB_TOKEN = '';
 
-    private constructor() {  }
+    private constructor() {
+        if (!process.env.GITHUB_TOKEN) {
+            throw new Error('missing github token');
+        }
+        this.GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+    }
 
     public static getInstance(): GithubConnectorService {
         if (!GithubConnectorService.instance) {
@@ -44,7 +45,7 @@ export class GithubConnectorService {
         const refResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/refs/heads/${branch}`, {
             method: 'GET',
             headers: {
-                Authorization: `token ${GITHUB_TOKEN}`,
+                Authorization: `token ${this.GITHUB_TOKEN}`,
             },
         });
         const refData = await refResponse.json() as { object: { sha: string } };
@@ -66,7 +67,7 @@ export class GithubConnectorService {
         const treeResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees`, {
             method: 'POST',
             headers: {
-                Authorization: `token ${GITHUB_TOKEN}`,
+                Authorization: `token ${this.GITHUB_TOKEN}`,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(treeData),
@@ -85,7 +86,7 @@ export class GithubConnectorService {
         const commitResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/commits`, {
             method: 'POST',
             headers: {
-                Authorization: `token ${GITHUB_TOKEN}`,
+                Authorization: `token ${this.GITHUB_TOKEN}`,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(commitData),
@@ -102,13 +103,11 @@ export class GithubConnectorService {
         await fetch(`https://api.github.com/repos/${owner}/${repo}/git/refs/heads/${branch}`, {
             method: 'PATCH',
             headers: {
-                Authorization: `token ${GITHUB_TOKEN}`,
+                Authorization: `token ${this.GITHUB_TOKEN}`,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(updateRefData),
         });
 
     }
-    // async putAddresses
-    // private async updateGeoLocationCache(cache: GithubCachedGeoLocationDto[])
 }

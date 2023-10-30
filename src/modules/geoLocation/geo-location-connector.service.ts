@@ -4,22 +4,21 @@ import { AddressDto } from '../../dtos/address.dto';
 import { GoogleResponseDto } from './google-response.dto';
 import { GithubCachedAddressDto } from '../github/github-cached-address.dto';
 
-const API_KEY = process.env.GOOGLE_API_KEY;
-if (!API_KEY) {
-    throw new Error('missing google api key')
-}
-
 export class GeoLocationConnectorService {
     private static instance: GeoLocationConnectorService;
     private githubConnectorService: GithubConnectorService;
     private shouldUpdateCache: boolean
-
+    private API_KEY = ''
     private cachedAddressesLocations: GithubCachedAddressDto[];
 
     private constructor() {
         this.githubConnectorService = GithubConnectorService.getInstance();
         this.cachedAddressesLocations = [];
         this.shouldUpdateCache = false;
+        if (!process.env.GOOGLE_API_KEY) {
+            throw new Error('missing google api key')
+        }
+        this.API_KEY = process.env.GOOGLE_API_KEY;
     }
 
     public static getInstance(): GeoLocationConnectorService {
@@ -68,9 +67,10 @@ export class GeoLocationConnectorService {
         const queryParams = {
             address: unformattedAddress,
             language: 'iw',
-            key: API_KEY
+            key: this.API_KEY
         };
 
+        // @ts-ignore
         const queryString = new URLSearchParams(queryParams).toString();
         const urlWithParams = `${baseUrl}?${queryString}`;
 
