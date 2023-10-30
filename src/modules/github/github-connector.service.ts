@@ -76,7 +76,7 @@ export class GithubConnectorService {
         const newTreeSha = treeDataResponse.sha;
 
         // Step 3: Create a new commit
-        const commitMessage = `${new Date(Date.now()).toLocaleString("he-IL")} update`;
+        const commitMessage = `${new Date(Date.now()).toLocaleString("he-IL", {timeZone: 'Asia/Jerusalem'})} update`;
         const commitData = {
             message: commitMessage,
             tree: newTreeSha,
