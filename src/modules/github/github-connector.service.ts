@@ -4,7 +4,7 @@ import { GithubCachedAddressDto } from './github-cached-address.dto';
 
 export class GithubConnectorService {
     private static instance: GithubConnectorService;
-    private CACHED_GEO_LOCATIONS_URL = 'https://raw.githubusercontent.com/orianshechter/blood-donation-addresses/main/test/addressesGeoPoints.json';
+    private CACHED_GEO_LOCATIONS_URL = 'https://raw.githubusercontent.com/orianshechter/blood-donation-addresses/main/addressesGeoPoints.json';
     private GITHUB_TOKEN = '';
 
     private constructor() {
@@ -28,14 +28,14 @@ export class GithubConnectorService {
     }
 
     async addDonations(donations: GithubDonationDto[]): Promise<void> {
-        return this.addFileToGithub('test/addresses.json', donations);
+        return this.addFileToGithub('addresses.json', donations);
     }
 
     async updateCache(addresses: AddressDto[]): Promise<void> {
-        return this.addFileToGithub('test/addressesGeoPoints.json', addresses);
+        return this.addFileToGithub('addressesGeoPoints.json', addresses);
     }
 
-    private async addFileToGithub(filePath: 'test/addresses.json' | 'test/addressesGeoPoints.json',
+    private async addFileToGithub(filePath: 'addresses.json' | 'addressesGeoPoints.json',
                                   fileContent: GithubDonationDto[] | AddressDto[]): Promise<void> {
         const owner = 'orianshechter';
         const repo = 'blood-donation-addresses';
