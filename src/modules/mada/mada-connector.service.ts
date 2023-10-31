@@ -72,10 +72,9 @@ export class MadaConnectorService {
         return aggregatedAddressesMap;
     }
 
-    private getTimeStamp(dateDonation: string, hour: string, timeZone: string = 'Asia/Jerusalem'): string {
+    private getTimeStamp(dateDonation: string, hour: string): string {
         const dateTimeString = `${dateDonation.split('T')[0]}T${hour}:00`;
-        const date = new Date(dateTimeString).toLocaleString('en-US', { timeZone });
-        return new Date(date).toISOString();
+        return new Date(dateTimeString).toISOString();
     }
 
     private isOnTheNextDays(maxDaysDiff: number, timestamp: string): boolean {
