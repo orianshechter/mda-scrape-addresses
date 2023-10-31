@@ -72,14 +72,10 @@ export class MadaConnectorService {
         return aggregatedAddressesMap;
     }
 
-    private getTimeStamp(dateDonation: string, hour: string): string {
-        // Parse the DateDonation and FromHour into Date objects
-        const dateDonationDate = new Date(dateDonation);
-        const fromHourParts = hour.split(":");
-        const fromHourDate = new Date(dateDonationDate);
-        fromHourDate.setHours(parseInt(fromHourParts[0], 10), parseInt(fromHourParts[1], 10));
-
-        return fromHourDate.toISOString();
+    private getTimeStamp(dateDonation: string, hour: string, timeZone: string = 'Asia/Jerusalem'): string {
+        const dateTimeString = `${dateDonation.split('T')[0]}T${hour}:00`;
+        const date = new Date(dateTimeString).toLocaleString('en-US', { timeZone });
+        return new Date(date).toISOString();
     }
 
     private isOnTheNextDays(maxDaysDiff: number, timestamp: string): boolean {
