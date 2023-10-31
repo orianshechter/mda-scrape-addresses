@@ -2,7 +2,7 @@ name: Scrape addresses
 
 on:
   schedule:
-    - cron: "0 4-11 * * *"
+    - cron: "*/10 3-10 * * *"
     - cron: "0 0,1,2,3,12-23 * * *"
   workflow_dispatch:
 
