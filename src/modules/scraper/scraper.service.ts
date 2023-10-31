@@ -7,18 +7,18 @@ export class ScraperService {
     private madaConnector: MadaConnectorService
     private githubConnector: GithubConnectorService;
     private geoLocationConnector: GeoLocationConnectorService;
-    private daysAmount: number
+    private readonly daysAhead: number;
 
-    constructor(daysAmount: number) {
+    constructor(daysAhead: number) {
         this.madaConnector = MadaConnectorService.getInstance();
         this.githubConnector = GithubConnectorService.getInstance();
         this.geoLocationConnector = GeoLocationConnectorService.getInstance();
-        this.daysAmount = daysAmount;
+        this.daysAhead = daysAhead;
     }
 
     async start() {
         const [madaAddresses, _] = await Promise.all([
-            this.madaConnector.getAddresses(),
+            this.madaConnector.getAddresses(this.daysAhead),
             this.geoLocationConnector.init()
         ]);
 

@@ -15,9 +15,12 @@ export class MadaConnectorService {
 
         return MadaConnectorService.instance;
     }
-    async getAddresses(): Promise<MadaAddressAggregatedDto[]> {
+    async getAddresses(daysAhead: number): Promise<MadaAddressAggregatedDto[]> {
         const rawAddresses = await this.getRawAddresses();
-        return Array.from(this.groupByAddress(rawAddresses).values());
+        const validDatesRawAddresses = rawAddresses.filter(
+            address => this.isOnTheNextDays(daysAhead, address.DateDonation)
+        );
+        return Array.from(this.groupByAddress(validDatesRawAddresses).values());
     }
 
     private async getRawAddresses(): Promise<MadaAddressDto[]> {
@@ -77,6 +80,18 @@ export class MadaConnectorService {
         fromHourDate.setHours(parseInt(fromHourParts[0], 10), parseInt(fromHourParts[1], 10));
 
         return fromHourDate.toISOString();
+    }
+
+    private isOnTheNextDays(maxDaysDiff: number, timestamp: string): boolean {
+        let date = new Date(timestamp);
+        let dateNow = new Date(Date.now());
+
+        // To calculate the time difference of two dates
+        let differenceInTime = date.getTime() - dateNow.getTime();
+
+        // To calculate the no. of days between two dates
+        let differenceInDays = differenceInTime / (1000 * 3600 * 24);
+        return differenceInDays <= maxDaysDiff;
     }
 
 }
