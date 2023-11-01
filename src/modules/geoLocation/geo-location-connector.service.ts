@@ -88,7 +88,7 @@ export class GeoLocationConnectorService {
             unformatted: unformattedAddress,
             location: googleResponse.results[0].geometry.location,
             formatted: googleResponse.results[0].formatted_address,
-            city
+            city: city || unformattedAddress
         }
     }
     private getUnformattedAddress(rawAddress: MadaAddressAggregatedDto): string {
