@@ -18,7 +18,7 @@ export class MadaConnectorService {
     async getAddresses(daysAhead: number): Promise<MadaAddressAggregatedDto[]> {
         const rawAddresses = await this.getRawAddresses();
         const validDatesRawAddresses = rawAddresses.filter(
-            address => this.isOnTheNextDays(daysAhead, address.DateDonation)
+            address => this.isValidAddress(address) && this.isOnTheNextDays(daysAhead, address.DateDonation)
         );
         return Array.from(this.groupByAddress(validDatesRawAddresses).values());
     }
@@ -87,6 +87,10 @@ export class MadaConnectorService {
         // To calculate the no. of days between two dates
         let differenceInDays = differenceInTime / (1000 * 3600 * 24);
         return differenceInDays <= maxDaysDiff;
+    }
+
+    private isValidAddress(address: MadaAddressDto): boolean {
+        return (address.Name !== '' || address.City !== '' || address.Street !== '');
     }
 
 }
