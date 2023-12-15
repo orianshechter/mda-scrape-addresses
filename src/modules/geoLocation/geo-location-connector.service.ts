@@ -47,6 +47,7 @@ export class GeoLocationConnectorService {
         if (cachedAddress) {
             // Add last usage, to delete unused address in the future
             cachedAddress.lastUsedTimestamp = new Date(Date.now()).toISOString();
+            this.shouldUpdateCache = true;
 
             return {
                 unformatted: cachedAddress.unformatted,
@@ -56,7 +57,6 @@ export class GeoLocationConnectorService {
             };
         }
 
-        this.shouldUpdateCache = true;
         const addressFromGoogle = await this.getAddressFromGoogle(unformattedAddress, rawAddress.city);
         this.cachedAddressesLocations.push(addressFromGoogle);
         return addressFromGoogle;
