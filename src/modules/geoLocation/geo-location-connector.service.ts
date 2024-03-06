@@ -75,11 +75,6 @@ export class GeoLocationConnectorService {
         const urlWithParams = `${baseUrl}?${queryString}`;
 
         const response = await fetch(urlWithParams);
-
-        if (!response.ok) {
-            throw new Error('failed to reach google api');
-        }
-
         const googleResponse = await response.json() as GoogleResponseDto;
         if (googleResponse.status !== "OK") {
             return this.getBadAddress(unformattedAddress);
