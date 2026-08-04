@@ -15,6 +15,7 @@ export class MadaConnectorService {
 
         return MadaConnectorService.instance;
     }
+
     async getAddresses(daysAhead: number): Promise<MadaAddressAggregatedDto[]> {
         const rawAddresses = await this.getRawAddresses();
         const validDatesRawAddresses = rawAddresses.filter(
@@ -29,13 +30,38 @@ export class MadaConnectorService {
                 "headers": {
                     "content-type": "application/json",
                     "Referer": "https://www.mdais.org/blood-donation",
+                    // Adding User-Agent to mimic a real browser. Helps bypass basic WAF/Bot protection.
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
                 },
                 "body": "{\"RequestHeader\":{\"Application\":101,\"Module\":\"BloodBank\",\"Function\":\"GetAllDetailsDonations\",\"Token\":\"\"},\"RequestData\":\"\"}",
                 "method": "POST"
             });
-        if(!madaResponse.ok) {
-            throw new Error('Error fetching addresses from mada');
+
+        if (!madaResponse.ok) {
+            // --- START OF ERROR LOGGING ---
+            console.error("❌ --- START MADA API ERROR --- ❌");
+            console.error(`HTTP Status Code: ${madaResponse.status} ${madaResponse.statusText}`);
+            
+            // Log headers to see if a firewall (like Cloudflare/Imperva) is blocking the request
+            const responseHeaders: Record<string, string> = {};
+            madaResponse.headers.forEach((value, key) => {
+                responseHeaders[key] = value;
+            });
+            console.error("Response Headers:", JSON.stringify(responseHeaders, null, 2));
+
+            try {
+                // Attempt to read the error page/message from the server
+                const errorBody = await madaResponse.text();
+                console.error("Response Body:", errorBody);
+            } catch (e) {
+                console.error("Could not read response body.");
+            }
+            console.error("❌ --- END MADA API ERROR --- ❌");
+            // --- END OF ERROR LOGGING ---
+
+            throw new Error(`Error fetching addresses from mada. HTTP Status: ${madaResponse.status}`);
         }
+        
         const madaResponseJson: MadaApiResponseDto = await madaResponse.json() as MadaApiResponseDto;
         return JSON.parse(madaResponseJson.Result);
     }
