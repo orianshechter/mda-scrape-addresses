@@ -99,7 +99,17 @@ export class MadaConnectorService {
     }
 
     private getTimeStamp(dateDonation: string, hour: string): string {
-        const dateTimeString = `${dateDonation.split('T')[0]}T${hour}:00`;
+        let normalizedHour = hour.trim();
+
+        if (/^\d{3,4}$/.test(normalizedHour)) {
+            normalizedHour = normalizedHour.padStart(4, '0');
+            normalizedHour = `${normalizedHour.slice(0, 2)}:${normalizedHour.slice(2)}`;
+        } else if (/^\d{1,2}:\d{2}$/.test(normalizedHour)) {
+            const [hours, minutes] = normalizedHour.split(':');
+            normalizedHour = `${hours.padStart(2, '0')}:${minutes}`;
+        }
+
+        const dateTimeString = `${dateDonation.split('T')[0]}T${normalizedHour}:00`;
         return new Date(dateTimeString).toISOString();
     }
 
